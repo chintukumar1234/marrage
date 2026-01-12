@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fast Search – Hash Table Structure</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Poppins,sans-serif;}
+
+body{
+    min-height:100vh;
+    background:linear-gradient(135deg,#020617,#0f172a,#1e293b);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    color:#fff;
+}
+
+/* CARD */
+.card{
+    width:95%;
+    max-width:900px;
+    background:rgba(255,255,255,0.08);
+    backdrop-filter:blur(16px);
+    border-radius:24px;
+    padding:30px;
+    box-shadow:0 0 40px rgba(99,102,241,.5);
+}
+
+h2{text-align:center;margin-bottom:20px;}
+
+/* SEARCH BAR */
+.search-box{
+    display:flex;
+    gap:10px;
+    margin-bottom:25px;
+}
+
+input{
+    flex:1;
+    height:45px;
+    border:none;
+    border-radius:14px;
+    padding:0 15px;
+    background:rgba(255,255,255,.15);
+    color:#fff;
+}
+
+button{
+    padding:0 22px;
+    border:none;
+    border-radius:14px;
+    cursor:pointer;
+    background:linear-gradient(135deg,#6366f1,#22d3ee);
+    font-weight:600;
+}
+
+/* GRID */
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:18px;
+}
+
+.node{
+    padding:16px;
+    border-radius:50px 0px;
+    background:linear-gradient(135deg,#1e40af,#2563eb);
+    box-shadow:0 0 18px rgba(59,130,246,.6);
+    transition:.3s;
+}
+
+.node:hover{
+    transform:scale(1.05);
+}
+
+.node h4{margin-bottom:6px;}
+.node small{opacity:.85;}
+.notfound{
+    text-align:center;
+    color:#f87171;
+    margin-top:20px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+    <h2>⚡ Fast Search (Hash Table)</h2>
+
+    <div class="search-box">
+        <input type="text" id="searchKey" placeholder="Search by Name">
+        <button onclick="search()">Search</button>
+    </div>
+
+    <div class="grid" id="grid"></div>
+    <p class="notfound" id="msg"></p>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
+/* Firebase */
+const firebaseConfig = {
+  apiKey: "AIzaSyCsZcn4VPhpnlgU0K_NPHPINjq9Qi5iVT8",
+  authDomain: "mydatabase-e7c01.firebaseapp.com",
+  databaseURL: "https://mydatabase-e7c01-default-rtdb.firebaseio.com",
+  projectId: "mydatabase-e7c01",
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+/* HASH TABLE */
+let hashTable = {};
+
+/* UI */
+const grid = document.getElementById("grid");
+const msg = document.getElementById("msg");
+
+/* LOAD DATA ONCE */
+get(ref(db,"users")).then(snapshot=>{
+    snapshot.forEach(s=>{
+        const d=s.val();
+        hashTable[d.name.toLowerCase()] = d;   // 🔥 HASHING
+        createCard(d);
+    });
+});
+
+/* CREATE CARD */
+function createCard(d){
+    const div=document.createElement("div");
+    div.className="node";
+    div.innerHTML=`
+        <h4>${d.name}</h4>
+        <small>${d.date}</small>
+        <p>${d.project}</p>
+    `;
+    grid.appendChild(div);
+}
+
+/* FAST SEARCH O(1) */
+window.search = ()=>{
+    const key=document.getElementById("searchKey").value.toLowerCase();
+    grid.innerHTML="";
+    msg.innerHTML="";
+
+    if(hashTable[key]){
+        createCard(hashTable[key]);
+    }else{
+        msg.innerHTML="❌ No record found";
+    }
+};
+</script>
+
+</body>
+</html>
