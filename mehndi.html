@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mehndi Designs</title>
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Segoe UI',sans-serif;
+}
+
+body{
+  background: linear-gradient(135deg,#2c0b18,#000);
+  color:white;
+}
+
+/* HEADER */
+.header{
+  height:7vh;
+  background:linear-gradient(134deg,rgba(231,118,188,.9),rgba(0,0,0,.4),rgb(224,145,81));
+  display:flex;
+  align-items:center;
+  padding:0 20px;
+}
+
+.header h2{
+  color:white;
+}
+
+/* TITLE */
+.mehndi-title{
+  text-align:center;
+  padding:30px 10px;
+}
+
+.mehndi-title h1{
+  color:#ffb347;
+  font-size:2.5rem;
+}
+
+.mehndi-title p{
+  opacity:.85;
+}
+
+/* GALLERY */
+.gallery{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  gap:25px;
+  padding:30px;
+}
+
+/* CARD */
+.card{
+  position:relative;
+  border-radius:18px;
+  overflow:hidden;
+  cursor:pointer;
+  box-shadow:0 10px 25px rgba(0,0,0,.5);
+  transition:.4s ease;
+}
+
+.card img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  transition:.4s ease;
+}
+
+/* OVERLAY */
+.overlay{
+  position:absolute;
+  inset:0;
+  background:linear-gradient(to top,rgba(0,0,0,.7),transparent);
+  display:flex;
+  align-items:flex-end;
+  padding:20px;
+  opacity:0;
+  transition:.4s ease;
+}
+
+.overlay h3{
+  color:#ffcc70;
+  transform:translateY(20px);
+  transition:.4s ease;
+}
+
+/* HOVER */
+.card:hover{
+  transform:translateY(-8px) scale(1.03);
+}
+
+.card:hover img{
+  transform:scale(1.15);
+}
+
+.card:hover .overlay{
+  opacity:1;
+}
+
+.card:hover h3{
+  transform:translateY(0);
+}
+
+/* POPUP */
+.popup{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.85);
+  display:none;
+  justify-content:center;
+  align-items:center;
+  z-index:100;
+}
+
+.popup img{
+  max-width:90%;
+  max-height:90%;
+  border-radius:12px;
+}
+
+.popup span{
+  position:absolute;
+  top:20px;
+  right:25px;
+  font-size:35px;
+  cursor:pointer;
+  color:white;
+}
+</style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <h2>🌿 Mehndi Art</h2>
+</div>
+
+<!-- TITLE -->
+<div class="mehndi-title">
+  <h1>Mehndi Designs</h1>
+  <p>Bridal • Arabic • Festival • Simple</p>
+</div>
+
+<!-- GALLERY -->
+<div class="gallery">
+  <div class="card" onclick="openImg(this)">
+    <img src="https://tse2.mm.bing.net/th/id/OIP.HLN3SSFpOtyE9Ybd9B7fLgHaHa?rs=1&pid=ImgDetMain&o=7&rm=3">
+    <div class="overlay"><h3>Bridal Mehndi</h3></div>
+  </div>
+
+  <div class="card" onclick="openImg(this)">
+    <img src="https://tse1.mm.bing.net/th/id/OIP.Px_6pWj4pQ-JbqDCvWZ6iwHaJH?pid=ImgDet&w=172&h=211&c=7&dpr=1.1&o=7&rm=3">
+    <div class="overlay"><h3>Arabic Mehndi</h3></div>
+  </div>
+
+  <div class="card" onclick="openImg(this)">
+    <img src="https://tse2.mm.bing.net/th/id/OIP.ygiNwb__QKBOGZe1aG0R-AHaJP?pid=ImgDet&w=474&h=591&rs=1&o=7&rm=3">
+    <div class="overlay"><h3>Simple Mehndi</h3></div>
+  </div>
+
+  <div class="card" onclick="openImg(this)">
+    <img src="https://tse2.mm.bing.net/th/id/OIP.zuXkuQAx8SD5qpa91qgOcQHaHT?pid=ImgDet&w=172&h=169&c=7&dpr=1.1&o=7&rm=3">
+    <div class="overlay"><h3>Festival Mehndi</h3></div>
+  </div>
+</div>
+
+<!-- POPUP -->
+<div class="popup" id="popup">
+  <span onclick="closeImg()">×</span>
+  <img id="popupImg">
+</div>
+
+<script>
+function openImg(card){
+  document.getElementById("popup").style.display="flex";
+  document.getElementById("popupImg").src=card.querySelector("img").src;
+}
+
+function closeImg(){
+  document.getElementById("popup").style.display="none";
+}
+</script>
+
+</body>
+</html>
