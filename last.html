@@ -33,7 +33,7 @@ h2{text-align:center;margin-bottom:20px;}
 /* SEARCH BAR */
 .search-box{
     display:flex;
-    gap:10px;
+    gap:5px;
     margin-bottom:25px;
 }
 
@@ -88,7 +88,7 @@ button{
 <body>
 
 <div class="card">
-    <h2>⚡ Fast Search (Hash Table)</h2>
+    <h2>⚡ Total Booking: <label id="counter"></label></h2>
 
     <div class="search-box">
         <input type="text" id="searchKey" placeholder="Search by Name">
@@ -113,48 +113,105 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
+let count_record=0;
+class tree{
+    constructor(data){
+        this.data=data;
+        this.left=null;
+        this.right=null;
+    }
+}
 
-/* HASH TABLE */
-let hashTable = {};
+class dfstree{
+    constructor(){
+        this.root=null;
+    }
+    create(value){
+        let newnode=new tree(value);
+        if(this.root===null){
+            this.root=newnode;
+        }else{
+            this.root=this.insertnode(this.root,newnode);
+        }
+    }
 
-/* UI */
-const grid = document.getElementById("grid");
-const msg = document.getElementById("msg");
+    insertnode(current,newnode){
+        if(current===null){
+            return newnode;
+        }
+        if(current.data.name>=newnode.data.name){
+            current.left=this.insertnode(current.left,newnode);
+        }else if(current.data.name<newnode.data.name){
+            current.right=this.insertnode(current.right,newnode);
+        }
+        return current;
+    }
+    inorder(root){
+        if(root==null){
+            return;
+        }
+        this.inorder(root.left);
+         const div=document.createElement("div");
+        div.className="node";
+        div.innerHTML=`
+        <h4>${root.data.name}</h4>
+        <small>${root.data.date}</small>
+        <p>${root.data.project}</p>
+    `;
+     grid.appendChild(div);
+        this.inorder(root.right);
+    }
 
-/* LOAD DATA ONCE */
+    searchnode(root, value){
+    if(root == null){
+        document.getElementById("msg").innerHTML="Name is not found!";
+        return null;
+    }
+
+    if(value < root.data.name.toLowerCase()){
+        return this.searchnode(root.left, value);
+    } 
+    else if(value > root.data.name.toLowerCase()){
+        return this.searchnode(root.right, value);
+    } 
+    else {
+        return root;
+    }
+}
+
+}
+const list=new dfstree();
 get(ref(db,"users")).then(snapshot=>{
     snapshot.forEach(s=>{
         const d=s.val();
-        hashTable[d.name.toLowerCase()] = d;   // 🔥 HASHING
-        createCard(d);
+        list.create(d);
+        count_record++;
     });
+    list.inorder(list.root);
+    document.getElementById("counter").innerHTML=`${count_record}`;
 });
 
-/* CREATE CARD */
-function createCard(d){
-    const div=document.createElement("div");
-    div.className="node";
-    div.innerHTML=`
-        <h4>${d.name}</h4>
-        <small>${d.date}</small>
-        <p>${d.project}</p>
-    `;
-    grid.appendChild(div);
-}
-
-/* FAST SEARCH O(1) */
 window.search = ()=>{
-    const key=document.getElementById("searchKey").value.toLowerCase();
-    grid.innerHTML="";
-    msg.innerHTML="";
+    const key = document.getElementById("searchKey").value.toLowerCase();
+    grid.innerHTML = "";
+    msg.innerHTML = "";
+    if(key===""){
+        document.getElementById("msg").innerHTML="Please enter the name";
+        return;
+    }
+    const result = list.searchnode(list.root, key);
 
-    if(hashTable[key]){
-        createCard(hashTable[key]);
-    }else{
-        msg.innerHTML="❌ No record found";
+    if(result){
+        const div = document.createElement("div");
+        div.className = "node";
+        div.innerHTML = `
+            <h4>${result.data.name}</h4>
+            <small>${result.data.date}</small>
+            <p>${result.data.project}</p>
+        `;
+        grid.appendChild(div);
     }
 };
 </script>
-
 </body>
 </html>
