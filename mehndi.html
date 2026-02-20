@@ -66,7 +66,7 @@ body{
 
 .card img{
   width:100%;
-  height:100%;
+  height:300px;
   object-fit:cover;
   transition:.4s ease;
 }
@@ -110,7 +110,7 @@ body{
 .popup{
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,.85);
+  background:rgba(0,0,0,.9);
   display:none;
   justify-content:center;
   align-items:center;
@@ -148,44 +148,85 @@ body{
 </div>
 
 <!-- GALLERY -->
-<div class="gallery">
-  <div class="card" onclick="openImg(this)">
-    <img src="https://tse2.mm.bing.net/th/id/OIP.HLN3SSFpOtyE9Ybd9B7fLgHaHa?rs=1&pid=ImgDetMain&o=7&rm=3">
-    <div class="overlay"><h3>Bridal Mehndi</h3></div>
-  </div>
-
-  <div class="card" onclick="openImg(this)">
-    <img src="https://tse1.mm.bing.net/th/id/OIP.Px_6pWj4pQ-JbqDCvWZ6iwHaJH?pid=ImgDet&w=172&h=211&c=7&dpr=1.1&o=7&rm=3">
-    <div class="overlay"><h3>Arabic Mehndi</h3></div>
-  </div>
-
-  <div class="card" onclick="openImg(this)">
-    <img src="https://tse2.mm.bing.net/th/id/OIP.ygiNwb__QKBOGZe1aG0R-AHaJP?pid=ImgDet&w=474&h=591&rs=1&o=7&rm=3">
-    <div class="overlay"><h3>Simple Mehndi</h3></div>
-  </div>
-
-  <div class="card" onclick="openImg(this)">
-    <img src="https://tse2.mm.bing.net/th/id/OIP.zuXkuQAx8SD5qpa91qgOcQHaHT?pid=ImgDet&w=172&h=169&c=7&dpr=1.1&o=7&rm=3">
-    <div class="overlay"><h3>Festival Mehndi</h3></div>
-  </div>
-</div>
+<div class="gallery"></div>
 
 <!-- POPUP -->
-<div class="popup" id="popup">
-  <span onclick="closeImg()">×</span>
+<div class="popup" id="popup" onclick="closeImg(event)">
+  <span onclick="closeImg()">&times;</span>
   <img id="popupImg">
 </div>
 
-<script>
-function openImg(card){
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
+/* Firebase Config */
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "mydatabase-e7c01.firebaseapp.com",
+  databaseURL: "https://mydatabase-e7c01-default-rtdb.firebaseio.com",
+  projectId: "mydatabase-e7c01",
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+/* Fetch Images from uploads folder */
+const gallery = document.querySelector('.gallery');
+
+get(ref(db, 'uploads'))
+.then((snapshot) => {
+    if (snapshot.exists()) {
+        const uploads = snapshot.val();
+
+        Object.keys(uploads).forEach(key => {
+
+            const imgData = uploads[key].imageData;
+            if(!imgData) return;
+
+            const card = document.createElement('div');
+            card.classList.add('card');
+
+            const img = document.createElement('img');
+            img.src = imgData;
+            img.alt = "Uploaded Mehndi";
+
+            const overlay = document.createElement('div');
+            overlay.classList.add('overlay');
+
+            const title = document.createElement('h3');
+            title.innerText = "Uploaded Mehndi";
+
+            overlay.appendChild(title);
+            card.appendChild(img);
+            card.appendChild(overlay);
+
+            card.addEventListener("click", () => openImg(imgData));
+
+            gallery.appendChild(card);
+        });
+
+    } else {
+        gallery.innerHTML = "<h2 style='text-align:center'>No Designs Available</h2>";
+    }
+})
+.catch((error) => {
+    console.error("Error fetching data:", error);
+});
+
+/* Open Popup */
+window.openImg = function(src){
   document.getElementById("popup").style.display="flex";
-  document.getElementById("popupImg").src=card.querySelector("img").src;
+  document.getElementById("popupImg").src=src;
 }
 
-function closeImg(){
-  document.getElementById("popup").style.display="none";
+/* Close Popup */
+window.closeImg = function(event){
+  if(!event || event.target.id === "popup"){
+    document.getElementById("popup").style.display="none";
+  }
 }
 </script>
-
 </body>
 </html>
